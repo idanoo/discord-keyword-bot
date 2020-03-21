@@ -15,7 +15,10 @@ class MyClient(discord.Client):
                 chan_list = [x.strip() for x in os.getenv("DISCORD_CHANNELS").split(',')]
                 for channel_id in chan_list:
                     channel = client.get_channel(int(channel_id))
-                    await channel.send('*' + message.content + '*')
+                    ping_string = ''
+                    if os.getenv("PING_ROLE") != '':
+                        ping_string = '<@&' + os.getenv("PING_ROLE") + '>: '    
+                    await channel.send(ping_string + message.content)
 
 load_dotenv()
 client = MyClient()
