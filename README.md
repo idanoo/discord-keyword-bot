@@ -1,5 +1,7 @@
 # Python Discord Keyword Bot
 
+A bot that listens to a channel for messages that matches a regex and posts to a set of other channels when it matches.
+
 ### Requirements
 python3 / pip3
 
