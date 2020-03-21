@@ -12,8 +12,10 @@ class MyClient(discord.Client):
     async def on_message(self, message):
         if message.channel.id == int(os.getenv("SOURCE_CHANNEL")):
             if re.match(os.getenv("REGEX_MATCH"), message.content, re.IGNORECASE):
-                channel = client.get_channel(int(os.getenv("DISCORD_CHANNEL")))
-                await channel.send(message.content)
+                chan_list = [x.strip() for x in os.getenv("DISCORD_CHANNELS").split(',')]
+                for channel_id in chan_list:
+                    channel = client.get_channel(int(channel_id))
+                    await channel.send(message.content)
 
 load_dotenv()
 client = MyClient()
