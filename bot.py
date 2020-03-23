@@ -18,5 +18,10 @@ class MyClient(discord.Client):
                     await channel.send(message.content)
 
 load_dotenv()
-client = MyClient()
-client.run(os.getenv("DISCORD_TOKEN"), bot=False)
+while True:
+    try:
+        client = MyClient()
+        client.run(os.getenv("DISCORD_TOKEN"), bot=False)
+    except:
+        print("Error Occurred... retrying")
+
