@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 class DiscordKeywordBot(discord.Client):
     CACHE_TTL = 900
     CACHE_DICT = {}
-    CACHE_LAST_PURGE = 0
+    CACHE_NEXT_PURGE = int(time.time()) + (DiscordKeywordBot.CACHE_TTL * 2)
 
     async def on_ready(self):
         print('Logged on as', self.user)
@@ -22,31 +22,35 @@ class DiscordKeywordBot(discord.Client):
                     chan_list = [x.strip() for x in os.getenv("DISCORD_CHANNELS").split(',')]
                     for channel_id in chan_list:
                         channel = client.get_channel(int(channel_id))
-                        await channel.send(message.content)
+                        await channel.send('test: ' + message.content)
 
     def cache_check(msg):
+        print('Checking cache for: ' + msg)
         if msg in DiscordKeywordBot.CACHE_DICT:
             """ Has been sent before.. Check TTL """
-            timestamp = DiscordKeywordBot.CACHE_DICT.get(msg)
-            if timestamp <=(int(time.time()) + DiscordKeywordBot.CACHE_TTL):
+            print('Exists in cache: ' + msg)
+            if DiscordKeywordBot.CACHE_DICT.get(msg) <= int(time.time()):
                 """ TTL Expired. """
-                DiscordKeywordBot.CACHE_DICT[msg] = int(time.time())
+                print('TTL Expired for:' + msg)
+                DiscordKeywordBot.CACHE_DICT[msg] = (int(time.time()) + DiscordKeywordBot.CACHE_TTL)
                 return True
             else:
                 """ TTL Not Expired """
+                print('TTL Not expired: ' + msg)
                 return False
         else:
-            DiscordKeywordBot.CACHE_DICT[msg] = int(time.time())
+            print('Not in cache: ' + msg)
+            DiscordKeywordBot.CACHE_DICT[msg] = (int(time.time()) + DiscordKeywordBot.CACHE_TTL)
             return True
 
     def cache_purge():
-        purge_timer = int(time.time()) - (DiscordKeywordBot.CACHE_TTL * 2)
-        if DiscordKeywordBot.CACHE_LAST_PURGE <= purge_timer:
-            print("Purging cache!!!")
-            DiscordKeywordBot.CACHE_LAST_PURGE = int(time.time())
+        if DiscordKeywordBot.CACHE_NEXT_PURGE <= int(time.time()) :
             """ Lets Purge!!! """
+            print("Total cache older than TTL*2. Purging old records.")
+            DiscordKeywordBot.CACHE_NEXT_PURGE = (int(time.time()) + (DiscordKeywordBot.CACHE_TTL * 2))
             for uniq_msg in DiscordKeywordBot.CACHE_DICT:
-                if DiscordKeywordBot.CACHE_DICT.get(uniq_msg) <= purge_timer:
+                if DiscordKeywordBot.CACHE_DICT.get(uniq_msg) <= int(time.time()):
+                    """ If TTL <= now, remove from cache """
                     DiscordKeywordBot.CACHE_DICT.pop(msg, None)
 
 
