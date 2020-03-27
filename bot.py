@@ -25,21 +25,16 @@ class DiscordKeywordBot(discord.Client):
                         await channel.send('test: ' + message.content)
 
     def cache_check(msg):
-        print('Checking cache for: ' + msg)
         if msg in DiscordKeywordBot.CACHE_DICT:
             """ Has been sent before.. Check TTL """
-            print('Exists in cache: ' + msg)
             if DiscordKeywordBot.CACHE_DICT.get(msg) <= int(time.time()):
                 """ TTL Expired. """
-                print('TTL Expired for:' + msg)
                 DiscordKeywordBot.CACHE_DICT[msg] = (int(time.time()) + DiscordKeywordBot.CACHE_TTL)
                 return True
             else:
                 """ TTL Not Expired """
-                print('TTL Not expired: ' + msg)
                 return False
         else:
-            print('Not in cache: ' + msg)
             DiscordKeywordBot.CACHE_DICT[msg] = (int(time.time()) + DiscordKeywordBot.CACHE_TTL)
             return True
 
