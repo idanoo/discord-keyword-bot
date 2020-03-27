@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 class DiscordKeywordBot(discord.Client):
     CACHE_TTL = 900
     CACHE_DICT = {}
-    CACHE_NEXT_PURGE = int(time.time()) + (DiscordKeywordBot.CACHE_TTL * 2)
+    CACHE_NEXT_PURGE = int(time.time()) + 1800
 
     async def on_ready(self):
         print('Logged on as', self.user)
